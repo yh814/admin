@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+    <typeAliases>
+        <typeAlias type="com.example.test3.dto.BoardDto" alias="BoardDto"/>
+        <typeAlias type="com.example.test3.dto.CodeDetailDto" alias="CodeDetailDto"/>
+        <typeAlias type="com.example.test3.dto.CodeDto" alias="CodeDto"/>
+        <typeAlias type="com.example.test3.dto.MatchProDto" alias="MatchProDto"/>
+        <typeAlias type="com.example.test3.dto.PageDto" alias="PageDto"/>
+        <typeAlias type="com.example.test3.dto.ProjectInfoDto" alias="ProjectInfoDto"/>
+        <typeAlias type="com.example.test3.dto.UserInfoDto" alias="UserInfoDto"/>
+        <typeAlias type="com.example.test3.dto.UserSkillDto" alias="UserSkillDto"/>
+    </typeAliases>
+</configuration>

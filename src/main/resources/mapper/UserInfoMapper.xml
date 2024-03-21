@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test3.dao.UserInfoDao">
+
+    <!--로그인 아이디, 비번 체크-->
+    <select id="loginIdPw" resultType="UserInfoDto">
+        SELECT USERID,USERPW
+        FROM USER_INFO
+        WHERE USERID = #{userId}
+        AND USERPW = #{userPw}
+    </select>
+
+    <!--아이디 중복체크-->
+    <select id="checkUserIdExist" resultType="boolean">
+        SELECT USERID
+        FROM USER_INFO
+        WHERE USERID = #{userId}
+    </select>
+
+    <!--한명의 정보 가져오기 -->
+    <select id="getOneUserInfo" resultType="UserInfoDto">
+        SELECT *
+        FROM USER_INFO
+        WHERE USERNUM = #{userNum}
+    </select>
+
+    <!--모든 회원의 정보 가져오기-->
+    <select id="getAllUserInfoDetail" resultType="UserInfoDto">
+        SELECT UI.*,
+        GENDER.DETAILCDNAME AS GenderDetailName,
+        STATUS.DETAILCDNAME AS EmploymentStatusDetailName,
+        RANK.DETAILCDNAME AS RankDetailName,
+        GRADE.DETAILCDNAME AS GradeDetailName,
+        CONTRACT.DETAILCDNAME AS ContractStatusDetailName
+        FROM USER_INFO UI
+        LEFT JOIN CODE_DETAIL GENDER ON UI.sexCD = GENDER.DETAILCD AND GENDER.CODEID = 'CD001'
+        LEFT JOIN CODE_DETAIL STATUS ON UI.userStatusCD = STATUS.DETAILCD AND STATUS.CODEID = 'CD002'
+        LEFT JOIN CODE_DETAIL RANK ON UI.userRankCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
+        LEFT JOIN CODE_DETAIL GRADE ON UI.userGradeCD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
+        LEFT JOIN CODE_DETAIL CONTRACT ON UI.conStatusCD = CONTRACT.DETAILCD AND CONTRACT.CODEID = 'CD005'
+        ORDER BY UI.USERNUM DESC
+    </select>
+
+    <!--모든 인원수 가져오기-->
+    <select id="getAllUserCount" resultType="int">
+        SELECT COUNT(USERNUM)
+        FROM USER_INFO
+    </select>
+
+    <!--해당 사원의 보유스킬들-->
+    <select id="selectUserSkills" resultType="String">
+        SELECT CD.DETAILCDNAME
+        FROM USER_SKILL US
+        LEFT OUTER JOIN CODE_DETAIL CD ON US.DETAILCD = CD.DETAILCD
+        WHERE CD.CODEID = 'CD009' AND US.USERNUM = #{userNum}
+    </select>
+
+    <!--검색처리-->
+    <select id="searchUsers" resultType="UserInfoDto">
+        SELECT UI.*,
+        STATUS.DETAILCDNAME AS EmploymentStatusDetailName,
+        GRADE.DETAILCDNAME AS GradeDetailName,
+        RANK.DETAILCDNAME AS RankDetailName
+        FROM USER_INFO UI
+        LEFT JOIN CODE_DETAIL STATUS ON UI.userStatusCD = STATUS.DETAILCD AND STATUS.CODEID = 'CD002'
+        LEFT JOIN CODE_DETAIL GRADE ON UI.userGradeCD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
+        LEFT JOIN CODE_DETAIL RANK ON UI.userRankCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
+        WHERE UI.USERNAME LIKE #{searchUserName}
+        AND UI.USERGRADECD LIKE #{searchUserGrade}
+        AND UI.USERSTATUSCD LIKE #{searchUserStatus}
+        AND UI.STARTDATE BETWEEN TO_DATE(#{searchUserStartDate}) AND TO_DATE(#{searchUserEndDate})
+        ORDER BY UI.USERNUM DESC
+    </select>
+
+    <!--회원 등록-->
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="userNum" keyColumn="userNum">
+        INSERT INTO USER_INFO
+        (USERNUM, USERNAME, USERID, USERPW, USERPHONE, USERBIRTH, addr, ADDRDETAIL, STARTDATE, salary, SEXCD, USERSTATUSCD, USERRANKCD, USERGRADECD, CONSTATUSCD, USEREMAIL, USERIMG)
+        VALUES
+        (user_info_seq.NEXTVAL, #{userName}, #{userId}, #{userPw}, #{userPhone}, #{userBirth}, #{addr}, #{addrDetail}, #{startDate}, #{salary}, #{sexCD}, #{userStatusCD}, #{userRankCD}, #{userGradeCD}, #{conStatusCD}, #{userEmail}, #{userImg})
+    </insert>
+
+
+    <!--회원 스킬 등록-->
+    <insert id="addUserSkill">
+        INSERT INTO USER_SKILL
+        VALUES (#{userNum}, #{detailCD})
+    </insert>
+
+    <!--회원정보 수정-->
+    <update id="modifyUserInfo">
+        UPDATE USER_INFO
+        SET USERNAME=#{userName},
+            USERID=#{userId},
+            USERPW=#{userPw},
+            USERPHONE=#{userPhone},
+            USERBIRTH=#{userBirth},
+            ADDR=#{addr},
+            ADDRDETAIL=#{addrDetail},
+            STARTDATE=#{startDate},
+            SALARY=#{salary},
+            SEXCD=#{sexCD},
+            USERSTATUSCD=#{userStatusCD},
+            USERRANKCD=#{userRankCD},
+            USERGRADECD=#{userGradeCD},
+            CONSTATUSCD=#{conStatusCD},
+            USERIMG=#{userImg}
+        WHERE userNum=#{userNum}
+    </update>
+
+    <!--유저삭제-->
+    <delete id="delUserFromMP">
+        DELETE FROM MATCH_PRO
+        WHERE USERNUM = #{userNum}
+    </delete>
+
+    <delete id="delUserFromUS">
+        DELETE FROM USER_SKILL
+        WHERE USERNUM = #{userNum}
+    </delete>
+
+    <delete id="delUserFromUI">
+        DELETE FROM USER_INFO
+        WHERE USERNUM = #{userNum}
+    </delete>
+
+    <delete id="delUserFromB">
+        DELETE FROM BOARD
+        WHERE USERNUM = #{userNum}
+    </delete>
+</mapper>

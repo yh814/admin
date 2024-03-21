@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.test3.dao.BoardDao">
+    <!-- 공지사항 조회(메인페이지 3개) -->
+    <select id="getNotice" resultType="BoardDto">
+        SELECT * FROM (
+            SELECT B.*, CD.DETAILCDNAME, ROWNUM AS row_num
+            FROM BOARD B
+            LEFT OUTER JOIN CODE_DETAIL CD ON B.BOARDCATEGORY = CD.DETAILCD
+            WHERE CD.CODEID = 'CD010' AND CD.DETAILCD='1'
+            ORDER BY B.BOARDNUM DESC
+        )
+        WHERE row_num &lt;= 3
+    </select>
+
+    <!-- 사내게시판 조회(메인페이지 3개) -->
+    <select id="getFreeBoard" resultType="BoardDto">
+        SELECT * FROM (
+            SELECT B.*, CD.DetailCDNAME, ROWNUM AS row_num
+            FROM BOARD B
+            LEFT OUTER JOIN CODE_DETAIL CD ON B.BOARDCATEGORY = CD.DETAILCD
+            WHERE CD.CODEID = 'CD010' AND CD.DETAILCD = '2'
+            ORDER BY B.BOARDNUM DESC
+        )
+        WHERE row_num &lt;= 3
+    </select>
+
+    <!-- 전체 공지사항 조회 -->
+    <select id="getMainNotice" resultType="BoardDto">
+        SELECT B.*, CD.DETAILCDNAME
+        FROM BOARD B
+        LEFT OUTER JOIN CODE_DETAIL CD ON B.BOARDCATEGORY = CD.DETAILCD
+        WHERE CD.CODEID = 'CD010' AND CD.DETAILCD='1'
+        ORDER BY B.BOARDNUM DESC
+    </select>
+
+    <!-- 전체 사내게시판 조회 -->
+    <select id="getMainFreeBoard" resultType="BoardDto">
+        SELECT B.*, CD.DETAILCDNAME
+        FROM BOARD B
+        LEFT OUTER JOIN CODE_DETAIL CD ON B.BOARDCATEGORY = CD.DETAILCD
+        WHERE CD.CODEID = 'CD010' AND CD.DETAILCD='2'
+        ORDER BY B.BOARDNUM DESC
+    </select>
+
+</mapper>
+

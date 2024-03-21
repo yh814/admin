@@ -1,0 +1,107 @@
+@charset "UTF-8";
+a{
+	font-family: Arial, sans-serif;
+	text-decoration-line: none;
+	color: black;
+}
+
+.topbar-sec {
+    font-family: Arial, sans-serif;
+    margin-left:40px;
+    margin-right: 40px;
+    margin-top:27px;
+    padding: 0;
+    height: 100px;
+}
+
+.top-bar-con{
+	background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    width: 88%;
+    height: 90px;
+    display: flex;
+    position: absolute;
+    flex-direction: row;
+    align-items: center;
+    padding-top: 25px;
+    padding-right: 65px;
+    padding-left: 60px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #7F7FD5;
+}
+
+.menu-box{
+	width: 70%;
+    height: 50px;
+    display: flex;
+    position: absolute;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    margin-left: 350px;
+    border: 1px solid #607d8b;
+}
+
+/* 사원 드롭다운 */
+
+.user-sec {
+    position: relative;
+}
+
+.user-dropdown1 {
+    display: none;
+    position: absolute;
+    top: 65%;
+    left:45%;
+    background-color: #f9f9f9; 
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); 
+    padding: 12px 0; 
+    z-index: 99;
+}
+
+
+
+.dropdown-list1 {
+	top:5px;
+    padding: 12px 16px; 
+    text-decoration: none; 
+    display: block; 
+}
+
+.dropdown-list1:hover {
+    background-color: #f1f1f1;
+}
+
+
+
+/* 사원 드롭다운 */
+
+.pro-sec {
+    position: relative;
+}
+
+.user-dropdown2 {
+    display: none;
+    position: absolute; 
+    top: 65%;
+    left:73%;
+    background-color: #f9f9f9;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); 
+    padding: 12px 0; 
+    z-index: 100; 
+}
+
+.dropdown-list2 {
+	top:5px;
+    padding: 12px 16px; 
+    text-decoration: none; 
+    display: block;
+}
+
+.dropdown-list2:hover {
+    background-color: #f1f1f1;
+}
+
+

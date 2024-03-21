@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test3.dao.MatchProDao">
+
+    <!--해당 유저가 한 모든 프로젝트-->
+    <select id="getOneUserPros" resultType="MatchProDto">
+        SELECT MP.*, UI.userName, UI.userRankCD, UI.userGradeCD, PI.*,
+        RANK.DETAILCDNAME AS RankDetailName,
+        GRADE.DETAILCDNAME AS GradeDetailName,
+        CUSTOMER.DETAILCDNAME AS cusDetailName,
+        PROGRESS.DETAILCDNAME AS progressDetailName,
+        ROLE.DETAILCDNAME AS roleDetailName
+        FROM BO_PRO.MATCH_PRO MP
+        LEFT JOIN USER_INFO UI ON UI.USERNUM = MP.USERNUM
+        LEFT JOIN PROJECT_INFO PI ON PI.PRONUM = MP.PRONUM
+        LEFT JOIN CODE_DETAIL RANK ON UI.USERRANKCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
+        LEFT JOIN CODE_DETAIL GRADE ON UI.USERGRADECD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
+        LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID = 'CD006'
+        LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
+        LEFT JOIN CODE_DETAIL ROLE ON MP.ROLECD = ROLE.DETAILCD AND ROLE.CODEID = 'CD008'
+        WHERE MP.USERNUM=#{userNum}
+    </select>
+
+    <!--매치 유저 정보-->
+    <select id="getMatchUserInfo" resultType="UserInfoDto">
+        SELECT UI.*,
+        RANK.DETAILCDNAME AS RankDetailName,
+        GRADE.DETAILCDNAME AS GradeDetailName
+        FROM USER_INFO UI
+        LEFT JOIN CODE_DETAIL RANK ON UI.USERRANKCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
+        LEFT JOIN CODE_DETAIL GRADE ON UI.USERGRADECD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
+        WHERE UI.USERNUM=#{userNum}
+    </select>
+
+    <!--해당 유저가 진행하고 있지 않는 프로젝트들-->
+    <select id="matchAllProList" resultType="ProjectInfoDto">
+        SELECT PI.*,
+        CUSTOMER.DETAILCDNAME AS cusDetailName,
+        PROGRESS.DETAILCDNAME AS progressDetailName
+        FROM PROJECT_INFO PI
+        LEFT JOIN MATCH_PRO MP ON PI.PRONUM=MP.PRONUM
+        LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID = 'CD006'
+        LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
+        WHERE MP.USERNUM != #{userNum}
+    </select>
+
+    <!--해당 유저가 진행하고 있지 않는 프로젝트들의 수-->
+    <select id="matchAllProListCnt" resultType="int">
+        SELECT COUNT(*)
+        FROM PROJECT_INFO PI
+        LEFT JOIN MATCH_PRO MP on PI.PRONUM = MP.PRONUM
+        WHERE MP.USERNUM != #{userNum}
+    </select>
+
+    <!--해당 유저가 진행하고 있지 않는 프로젝트 search-->
+    <select id="getSearchPro" resultType="ProjectInfoDto">
+        SELECT PI.*,
+        CUSTOMER.DETAILCDNAME AS cusDetailName,
+        PROGRESS.DETAILCDNAME AS progressDetailName
+        FROM PROJECT_INFO PI
+        LEFT JOIN MATCH_PRO MP ON PI.PRONUM = MP.PRONUM
+        LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID = 'CD006'
+        LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
+        WHERE MP.USERNUM NOT LIKE #{userNum} AND PI.PRONUM LIKE #{searchProName} AND PI.CUSCD LIKE #{searchCusName} AND PI.PROGRESSCD LIKE #{searchProgressName}
+    </select>
+
+    <!--유저 프로젝트 추가-->
+    <insert id="addMatchPro">
+        INSERT INTO MATCH_PRO(usernum, pronum, inputdate, witdate, rolecd)
+        VALUES (#{userNum},#{proNum},#{inputDate},#{witDate},#{roleCD})
+    </insert>
+
+    <!--한 프로젝트에 투입된 총인원-->
+    <select id="countUser" resultType="int">
+        SELECT COUNT(USERNUM)
+        FROM MATCH_PRO
+        WHERE PRONUM=#{proNum}
+    </select>
+
+</mapper>

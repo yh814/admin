@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.test3.dao.ProjectInfoDao">
+
+    <!--전체 프로젝트-->
+    <select id="allProList" resultType="ProjectInfoDto">
+        SELECT PI.*,
+        CUSTOMER.DETAILCDNAME AS cusDetailName,
+        PROGRESS.DETAILCDNAME AS progressDetailName
+        FROM PROJECT_INFO PI
+        LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID='CD006'
+        LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID='CD007'
+    </select>
+
+    <!--모든 프로젝트 개수 가져오기-->
+    <select id="getAllProjectCount" resultType="int">
+        SELECT COUNT(PRONUM)
+        FROM PROJECT_INFO
+    </select>
+
+    <!--해당 프로젝트의 필요기술들-->
+    <select id="selectProSkill" resultType="String">
+        SELECT CD.DETAILCDNAME
+        FROM PRO_SKILL PS
+        JOIN CODE_DETAIL CD ON PS.DETAILCD = CD.DETAILCD
+        WHERE CD.CODEID = 'CD009' AND PS.PRONUM = #{proNum}
+    </select>
+
+    <!--검색기능-->
+    <select id="searchProject" resultType="ProjectInfoDto">
+        SELECT PI.*,
+        CUSTOMER.DETAILCDNAME AS cusDetailName,
+        PROGRESS.DETAILCDNAME AS progressDetailName
+        FROM PROJECT_INFO PI
+        LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID='CD006'
+        LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID='CD007'
+        WHERE PI.PRONAME LIKE #{searchProName}
+        AND PI.CUSCD LIKE #{searchProCust}
+        AND PI.STARTDATE BETWEEN TO_DATE(#{searchStartDate1},'YYYY-MM-DD') AND TO_DATE(#{searchStartDate2},'YYYY-MM-DD')
+        AND PI.ENDDATE BETWEEN TO_DATE(#{searchEndDate1},'YYYY-MM-DD') AND TO_DATE(#{searchEndDate2},'YYYY-MM-DD')
+    </select>
+
+</mapper>
