@@ -9,7 +9,10 @@ import com.example.test3.service.UserInfoService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
@@ -50,7 +53,7 @@ public class UserInfoController {
     }
 
     @GetMapping("/allUserInfo")
-    public String getAllUserInfo(@ModelAttribute("userInfoBean") UserInfoDto userInfoBean, @RequestParam(value = "page", defaultValue = "1") int page, Model model) {
+    public String getAllUserInfo(@RequestParam(value = "page", defaultValue = "1") int page, Model model) {
         // 전체 사용자 정보를 가져옴
         List<UserInfoDto> allUser = userInfoService.getAllUserInfoDetail(page);
 
@@ -93,12 +96,12 @@ public class UserInfoController {
     }
 
     @GetMapping("/modify")
-    public String modify(@RequestParam("userNum")int userNum, Model model) {
+    public String modify(@RequestParam("userNum")int userNum,  Model model) {
 
         UserInfoDto userInfo = userInfoDao.getOneUserInfo(userNum);
-        model.addAttribute(userInfo);
+        model.addAttribute("userInfo",userInfo);
 
-        model.addAttribute("userInfoBean", new UserInfoDto());
+
         //성별
         String sexName = "CD001";
         List<CodeDetailDto> sexList = codeDao.getDetailName(sexName);
@@ -128,6 +131,8 @@ public class UserInfoController {
         String skillName= "CD009";
         List<CodeDetailDto> skillList = codeDao.getDetailName(skillName);
         model.addAttribute("skillList", skillList);
+
+
 
 
 

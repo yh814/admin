@@ -13,7 +13,7 @@ public interface UserInfoDao {
     UserInfoDto loginIdPw(String userId, String userPw);
 
     /*아이디 중복체크*/
-    boolean checkUserIdExist(String userId);
+    int checkUserIdExist(String userId);
 
     /*한명의 정보 가져오기*/
     UserInfoDto getOneUserInfo(int userNum);

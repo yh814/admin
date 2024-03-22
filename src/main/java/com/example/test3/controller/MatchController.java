@@ -14,7 +14,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/match")
-public class MatchProController {
+public class MatchController {
 
     private final MatchProDao matchProDao;
 
@@ -22,7 +22,7 @@ public class MatchProController {
 
     private final CodeDao codeDao;
 
-    public MatchProController(MatchProDao matchProDao,MatchProService matchProService,CodeDao codeDao){
+    public MatchController(MatchProDao matchProDao, MatchProService matchProService, CodeDao codeDao){
         this.matchProDao = matchProDao;
         this.matchProService = matchProService;
         this.codeDao = codeDao;

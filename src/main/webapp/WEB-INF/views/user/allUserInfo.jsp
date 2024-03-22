@@ -517,18 +517,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function validateImageSelection() {
-	const imageInput = document.getElementById('userImgFile');
-	const errorElement = document.getElementById('userImgError');
-
-	if (!imageInput.files.length) {
-		errorElement.textContent = '이미지 파일을 선택해주세요.';
-	} else {
-		errorElement.textContent = '';
-	}
-}
-
-document.getElementById('userImgFile').addEventListener('change', validateImageSelection);
 
 /*입력칸 유효성 검사 함수*/
 function validateField(input, rules, errorElementId) {
@@ -713,6 +701,11 @@ function validateCheckboxGroup(checkboxGroupName, errorElementId, errorMessage){
 	}
 }
 
+let isIdPass = false;
+document.getElementById('userId').addEventListener('input', function (){
+	isIdPass = false;
+});
+
 document.addEventListener('DOMContentLoaded', function() {
 	const checkIdButton = document.getElementById('checkId');
 	if (checkIdButton) {
@@ -727,10 +720,11 @@ document.addEventListener('DOMContentLoaded', function() {
 			$.ajax({
 				url: '/userCheck',
 				type: 'POST',
-				data: { userId: userId },
+				data: 'userId=' + encodeURIComponent(userId),
 				success: function(isAvailable) {
 					if (isAvailable) {
 						alert('사용 가능한 아이디입니다.');
+						isIdPass = true;
 					} else {
 						alert('이미 사용 중인 아이디입니다.');
 					}
@@ -767,7 +761,16 @@ document.getElementById('sub-form').addEventListener('click', function(event) {
 
 	// 기술 스택 선택 확인
 	validateCheckboxGroup('skillCD', 'skillCDError', '적어도 하나의 기술 스택을 선택해주세요.');
-	if (document.getElementById('skillCDError').textContent !== '') {
+
+	/*아이디 통과 못한 경우*/
+	if (!isIdPass) {
+		event.preventDefault();
+		alert('아이디 중복 체크를 해주세요.');
+		hasError = true
+	}else if(document.getElementById('userImg')=== ''){
+		alert('이미지 파일을 첨부해주세요')
+		hasError = true;
+	}else if (document.getElementById('skillCDError').textContent !== '') {
 		hasError = true;
 	}
 
@@ -795,10 +798,6 @@ document.getElementById('sub-form').addEventListener('click', function(event) {
 		alert('입력한 정보를 다시 확인해주세요.');
 	}
 });
-
-
-
-
 
 
 </script>

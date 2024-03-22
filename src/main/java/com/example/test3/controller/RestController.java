@@ -216,11 +216,10 @@ public class RestController {
 
     @PostMapping("/userCheck")
     public ResponseEntity<Boolean> checkUserId(@RequestParam("userId") String userId) {
-        boolean isAvailable = !userInfoDao.checkUserIdExist(userId);
+        boolean isAvailable = !userInfoService.checkUserIdExist(userId);
         return ResponseEntity.ok(isAvailable);
     }
 
 
 
 }
-

@@ -32,9 +32,9 @@ public class UserInfoService {
     //아이디 체크
     public boolean checkUserIdExist(String userId) {
 
-        boolean result = userInfoDao.checkUserIdExist(userId);
+        int result = userInfoDao.checkUserIdExist(userId);
 
-        if (result) {
+        if (result>0) {
             return true;
         } else {
             return false;
@@ -57,7 +57,7 @@ public class UserInfoService {
         return pageBean;
     }
 
-    //-----------------------------------------------추가---------------------------------------------------
+    //---------------------------------------------추가---------------------------------------------------
 
     public void addUser(UserInfoDto userInfo) {
         userInfoDao.addUser(userInfo);
