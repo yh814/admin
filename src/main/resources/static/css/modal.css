@@ -1,178 +1,197 @@
-body {
-    font-family: Arial;
-    background: #8B9EAA;
+/* 모달창 */
+
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
-.close{
-	width: 100%;
-	display: flex;
-	justify-content: flex-end;
+.join{
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
 }
+
 
 .modal-content {
-    position: absolute; /* 또는 다른 적절한 position 값 설정 */
-    top: 30%; /* 원하는 top 값으로 수정 */   
-    left: 13%;
-    transform: translateY(-50%); /* 세로 중앙 정렬을 위한 추가 설정 */
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 70%;
-    display: flex; 
-    height: 850px;
-    flex-direction: column;
+    background-color: #fefefe;
+    margin: 5% auto;
+    height: 700px;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* 모달의 너비 */
+    border-radius: 10px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 }
 
-.modalMain{
-	display: flex;
+
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
 
-.form {
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#fileInput{
+    visibility: hidden;
+}
+
+.block{
+    width: 100%;
+    height: 25px;
+    margin-bottom: 10px;
+    color: red;
+    font-size: 15px;
+}
+
+.input-group-append{
+    display: flex;
+}
+
+span.input-group-text {
+    width: 50px;
+    display: flex;
+    align-items: center;
+}
+
+.skill{
+    margin-right: 12px;
+    padding-bottom: 5px;
+
+}
+.form-group3 {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+
+.modalMain {
     display: flex;
     flex-wrap: wrap;
-    font-family: Arial;
-    width: 100%; /* 추가: flex item을 100%로 설정하여 flex 컨테이너 내에서 나란히 표시 */
+    justify-content: space-around;
 }
 
-.userImg {
-	margin-top: 50px;
-	margin-left: 40px;
-    width: 20%;
-    height: 800px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+.joinMain{
+
 }
 
-input[type="file"]::-webkit-file-upload-button {
-     background-color: #fff;
-     color: black;
-     padding: 8px 20px;
-     cursor: pointer;
-     border-radius: 5px;
-     font-size: 16px;
-     transition: background-color 0.3s ease;
+.left, .right {
+    flex-basis: 30%; /* 왼쪽과 오른쪽 컨텐츠가 각각 전체의 48% 차지 */
+    padding: 10px;
 }
 
-.getImg{
-      background-color: #8B9EAA;
-      color: #fff;
-      padding: 10px 20px;
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 16px;
-      transition: background-color 0.3s ease;
+.form-group, .form-group2, .form-group3 {
+    margin-bottom: 15px;
 }
 
-.getImg:hover {
-      background-color: #2980b9;
-}
-
-.getImg{
-	margin-top: 60px;
-}
-
-.left{
-    margin-left: 80px;
-    width: 30%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.right {
-    margin-left: 70px;
-    width: 30%;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.form-group,
-.form-group2 {
-    margin-bottom: 7px;
-    width: 100%;
-    height: 80px;
-}
-
-.form-group label,
-.form-group2 label {
-    margin-bottom: 5px;
+.form-group label, .form-group2 label, .form-group3 label {
     display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
 }
 
-.form-group input,
-.form-group2 input,
-.form-group select,
-.form-group2 select {
-    width: calc(100% - 10px); /* 수정: 입력 요소 너비에서 여백을 뺀 값으로 설정 */
-    height: 35px;
+.form-control {
+    width: 50%;
     padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
     box-sizing: border-box;
 }
 
-.sub-btn{
-	margin-top: 30px;
-	width: 100%;
-	display: flex;
-	justify-content: flex-end;
+.userImg {
+    margin-top: 50px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.id-sec{
-	display: flex;
-	
-}
-
-.checkId {
-	margin-top: 5px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: #fff;
-    color: black;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 10px;
-}
-
-.btn-primary {
-    margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    background: #1976D2;
-    color: white;
-    font-size: 15px;
-    cursor: pointer;
+.userImg img {
+    width: 150px;
+    height: 200px;
+    border-radius: 4px;
     margin-bottom: 10px;
 }
 
-.close-btn{
-	margin-top: 30px;
-	width: 100%;
-	display: flex;
-	justify-content: flex-end;
+.getImg {
+    display: block;
+    margin: auto;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
-.btn-close{
-	margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    background: gray;
+.getImg:hover {
+    background-color: #0056b3;
+}
+
+.email-input{
+    display: flex;
+    align-items: center;
+}
+
+.sub-btn {
+    display: flex;
+    justify-content: center; /* 버튼을 모달 중앙에 위치 */
+}
+
+.sub-form {
+    display: flex;
+    padding: 10px 20px;
+    background-color: #28a745;
     color: white;
-    font-size: 15px;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
-    margin-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.sub-form:hover {
+    background-color: #218838;
 }
 
 .error-message {
-    display: block; /* 에러 메시지를 블록 요소로 만들어 줄 바꿈 효과를 줍니다. */
-    color: red; /* 에러 메시지의 색상을 빨간색으로 지정합니다. */
-    margin-top: 5px; /* 입력 필드와 에러 메시지 사이의 간격을 조정합니다. */
+    color: #dc3545;
+    font-size: 14px;
+}
+
+.necessary {
+    color: #dc3545;
+}
+
+
+
+.autocompletePreview {
+    position: absolute;
+    left:69.476%;
+    width: fit-content;
+    box-sizing: border-box;
+    color: gray;
+    pointer-events: none; /* 마우스 이벤트 무시 */
     font-size: 12px;
-    height: 20px;
-    width: 100%;
+    align-content: center;
+    letter-spacing: 1px;
 }

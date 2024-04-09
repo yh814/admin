@@ -2,13 +2,14 @@
 
 <configuration>
     <typeAliases>
-        <typeAlias type="com.example.test3.dto.BoardDto" alias="BoardDto"/>
-        <typeAlias type="com.example.test3.dto.CodeDetailDto" alias="CodeDetailDto"/>
-        <typeAlias type="com.example.test3.dto.CodeDto" alias="CodeDto"/>
-        <typeAlias type="com.example.test3.dto.MatchProDto" alias="MatchProDto"/>
-        <typeAlias type="com.example.test3.dto.PageDto" alias="PageDto"/>
-        <typeAlias type="com.example.test3.dto.ProjectInfoDto" alias="ProjectInfoDto"/>
-        <typeAlias type="com.example.test3.dto.UserInfoDto" alias="UserInfoDto"/>
-        <typeAlias type="com.example.test3.dto.UserSkillDto" alias="UserSkillDto"/>
+        <typeAlias type="com.example.admin.dto.BoardDto" alias="BoardDto"/>
+        <typeAlias type="com.example.admin.dto.CodeDetailDto" alias="CodeDetailDto"/>
+        <typeAlias type="com.example.admin.dto.CodeDto" alias="CodeDto"/>
+        <typeAlias type="com.example.admin.dto.MatchProDto" alias="MatchProDto"/>
+        <typeAlias type="com.example.admin.dto.PageDto" alias="PageDto"/>
+        <typeAlias type="com.example.admin.dto.ProjectInfoDto" alias="ProjectInfoDto"/>
+        <typeAlias type="com.example.admin.dto.UserInfoDto" alias="UserInfoDto"/>
+        <typeAlias type="com.example.admin.dto.UserSkillDto" alias="UserSkillDto"/>
+        <typeAlias type="com.example.admin.dto.UserRoleDomain" alias="userRole"/>
     </typeAliases>
 </configuration>

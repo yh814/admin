@@ -11,94 +11,14 @@
 <title>Insert title here</title>
 </head>
 <c:import url="/WEB-INF/views/include/top_bar.jsp" />
-<link rel="stylesheet" href="${root }css/allUserInfo.css">
+<c:import url="/WEB-INF/views/include/side_bar.jsp" />
+<link rel="stylesheet" href="${root }css/projectInfo.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-$(document).ready(function() {
-    $('#searchForm').submit(function(event) {
-        event.preventDefault();
-
-        const searchProName = $('#searchProName').val();
-		const searchProCust = $('#searchProCust').val();
-		const searchStartDate1 = $('#searchStartDate1').val();
-		const searchStartDate2 = $('#searchStartDate2').val();
-		const searchEndDate1 = $('#searchEndDate1').val();
-		const searchEndDate2 = $('#searchEndDate2').val();
-
-        $.ajax({
-            type: 'GET',
-            url: '/search_pro',
-            dataType: 'json',
-            data: {
-            	searchProName: searchProName,
-            	searchProCust: searchProCust,
-            	searchStartDate1: searchStartDate1,
-            	searchStartDate2: searchStartDate2,
-            	searchEndDate1: searchEndDate1,
-            	searchEndDate2: searchEndDate2
-            },
-            success: function(data) {
-				const tableBody = $('.main');
-                tableBody.empty();
-                console.log(data);
-
-                    data.forEach(function(pro) {
-						let row = '<tr>' +
-                        	'<td>'+'<input type="checkbox" id="${pro.proNum}" class="check-user"/>'+'</td>'+
-                            '<td>' + pro.userNum + '</td>' +
-                            '<td>' + pro.proName + '</td>' +
-                            '<td>' + pro.cusCD + '</td>' +
-                            '<td>' + pro.progressDetailName + '</td>' +
-                            '<td>' + pro.startDate + '</td>' +
-                            '<td>' + pro.endDate + '</td>' +
-                            '<td>';
-						pro.skillDetailNameList.forEach(function(skill, index) {
-                            row += skill;
-                            if (index < user.skillDetailNameList.length - 1) {
-                                row += ', ';
-                            }
-                        });
-                        row += '</td>' +
-                            '<td>' +
-                            '<a href="${root}project/modify?proNum=' + pro.proNum + '">' +
-                            '<button class="user-modify">상세/수정</button>' +
-                            '</a>' +
-                            '</td>' +
-                            '<td>' +
-                            '<a href="${root}project/modify?pro.proNum=' + pro.proNum + '">' +
-                            '<button class="user-modify">상세/수정</button>' +
-                            '</a>' +
-                            '</td>' +
-                            '</tr>';
-                        tableBody.append(row);
-                      
-                    });
-                    $('.pagination').hide();
-
-                console.log(data);
-            },
-            error: function(xhr, status, error) {
-                // 오류 처리
-            }
-        });
-    });
-    
-    $('tr').click(function(event) {
-		const checkbox = $(this).find('.check-user');
-        checkbox.prop('checked', !checkbox.prop('checked'));
-        event.stopPropagation();
-    });
-
-    $('.check-user').click(function(event) {
-        event.stopPropagation();
-    });
-    
-});
-</script>
+<script src="${root}js/projectTop.js"></script>
 <body>
 <!-----------------------------------------------------------------  검색 필터  ----------------------------------------------------------------->
 <div class="search-sec">
-	<form action="${root}project/proMain" method="get">
+	<form id="searchForm" class="search-form">
 		<p class="search-title">검색조건</p>
 		<div class="search-box">
 			<div class="search-item">
@@ -141,111 +61,167 @@ $(document).ready(function() {
 <!-----------------------------------------------------------------  프로젝트 리스트 출력  ----------------------------------------------------------------->
 <div class="info-sec">
 	<p class="title">프로젝트 리스트</p>
-	<table class="table" >
-		<thead>
-			<tr>
-				<th><input type="checkbox" id="check-user" class="check-user" disabled/></th>
-				<th>프로젝트 번호</th>				
-				<th>프로젝트명</th>
-				<th>고객사명</th>
-				<th>진행현황</th>
-				<th>시작일</th>
-				<th>종료일</th>
-				<th>필요기술</th>
-				<th>상세/수정</th>
-				<th>투입인원</th>
-			</tr>
-		</thead>
-		<tbody class="main">
-	        <c:forEach var="pro" items="${allPro}">
-	        	<tr>
-	        		<td><input type="checkbox" id="${pro.proNum }" class="check-user"/></td>
-	            	<td>${pro.proNum}</td>
-	                <td>${pro.proName}</td>
-	                <td>${pro.cusDetailName}</td>
-	                <td>${pro.progressDetailName}</td>
-	                <td>${pro.startDate}</td>
-	                <td>${pro.endDate}</td>
-	                <td>
-				        <c:forEach var="skill" items="${pro.skillDetailNameList}" varStatus="status">
-				             ${skill}${status.last ? '' : ', '}
-				        </c:forEach>
-	                </td>                	                
-	                <td>
-	                    <a href="${root}project/modify?proNum=${pro.proNum}">
-	                         <button class="user-modify">상세/수정</button>
-	                    </a>   
-	                </td>    
-	                <td>
-	                    <a href="${root}project/modify?proNum=${pro.proNum}">
-	                         <button class="user-modify">인원관리</button>
-	                    </a>   
-	                </td> 
-	            </tr>
-	        </c:forEach>
-        </tbody>
+	<div class="paging-option">
+	<select name="paging" id="paging" style="width: 100px;height: 30px;" class="paging">
+		<option value="5">5개</option>
+		<option value="10">10개</option>
+		<option value="15">15개</option>
+	</select>
+	</div>
+	<div class="pro-showList">
+		<table class="table" >
+			<thead>
+				<tr>
+					<th><input type="checkbox" id="check-pro" class="check-pro" disabled/></th>
+					<th>프로젝트 번호</th>
+					<th>프로젝트명</th>
+					<th>고객사명</th>
+					<th>진행현황</th>
+					<th>시작일</th>
+					<th>종료일</th>
+					<th>필요기술</th>
+					<th>상세/수정</th>
+					<th>투입인원</th>
+				</tr>
+			</thead>
+			<tbody class="main">
+				<tr>
+					<td colspan="10">검색조건 없이 조회 누르시면 전체 프로젝트를 확인할 수 있습니다</td>
+				</tr>
+			</tbody>
 
-	</table>
-	
-	 <div class="pagination-main">
-				<ul class="pagination">
-					<c:choose>
-					<c:when test="${pageBean.prevPage <= 0 }">
-					<li class="page-item-desabled">
-						<a href="#" class="page-link">이전</a>
-					</li>
-					</c:when>
-					<c:otherwise>
-					<li class="page-item">
-						<a href="${root }project/proMain&page=${pageBean.prevPage}" class="page-link">이전</a>
-					</li>
-					</c:otherwise>
-					</c:choose>
-					
-					
-					<c:forEach var='idx' begin="${pageBean.min }" end='${pageBean.max }'>
-					<c:choose>
-					<c:when test="${idx == pageBean.currentPage }">
-					<li class="page-item-active">
-						<a href="${root }project/proMain?page=${idx}" class="page-link">${idx }</a>
-					</li>
-					</c:when>
-					<c:otherwise>
-					<li class="page-item">
-						<a href="${root }project/proMain?page=${idx}" class="page-link" class="page-link">${idx }</a>
-					</li>
-					</c:otherwise>
-					</c:choose>
-					
-					</c:forEach>
-					
-					<c:choose>
-					<c:when test="${pageBean.max >= pageBean.pageCnt }">
-					<li class="page-item disabled">
-						<a href="#" class="page-link">다음</a>
-					</li>
-					</c:when>
-					<c:otherwise>
-					<li class="page-item">
-						<a href="${root }project/proMain?page${pageBean.nextPage}" class="page-link">다음</a>
-					</li>
-					</c:otherwise>
-					</c:choose>
-					
-				</ul>
+		</table>
+	</div>
+	<div class="pagination">
+
+	</div>
+	<div class="add-delete-pro">
+		<button id="add-pro" class="add-pro">등록</button>
+		<!-- 회원 등록 모달창 -->
+		<form action="addPro" method="post" enctype="multipart/form-data" id="myModal" class="modal">
+			<div class="modal-content">
+				<!-- 닫기버튼 -->
+				<span class="close" id="closeModalBtn">&times;</span>
+
+				<!-- 메인 -->
+				<div class="modalMain">
+
+					<!-- 왼쪽 -->
+					<div class="left">
+						<div class="block">
+							<span class="block">* 표시가 있는 칸은 필수 입력입니다.</span>
+						</div>
+						<!-- 사원명 -->
+						<div class="form-group">
+							<label for="proName">프로젝트명&nbsp;<span class="necessary" style="color:red;">*</span></label>
+							<input type="text" id="proName" name="proName" class="form-control" placeholder="2~20자 사이로 입력해주세요" required="required"/>
+							<span id="proNameError" class="error-message" ></span>
+						</div>
+
+						<!-- 고객사 -->
+						<div class="form-group">
+							<label for="cusCD">고객사&nbsp;<span class="necessary" style="color:red;">*</span></label>
+							<select id="cusCD" name="cusCD" class="form-control" required="required">
+								<option value="default">--고객사 선택--</option>
+								<c:forEach var="cusList" items="${cusList}">
+									<option value="${cusList.detailCD}">${cusList.detailCdName}</option>
+								</c:forEach>
+							</select>
+							<span id="cusCDError" class="error-message" ></span>
+						</div>
+
+						<!-- 진행상태 -->
+						<div class="form-group">
+							<label for="progressCD">진행상태&nbsp;<span class="necessary" style="color:red;">*</span></label>
+							<select id="progressCD" name="progressCD" class="form-control" required="required">
+								<option value="default">--진행상태 선택--</option>
+								<c:forEach var="progressList" items="${progressList}">
+									<option value="${progressList.detailCD}">${progressList.detailCdName}</option>
+								</c:forEach>
+							</select>
+							<span id="progressCDError" class="error-message" ></span>
+						</div>
+
+						<%--시작일--%>
+						<div class="form-group">
+							<label for="startDate">시작일&nbsp;<span class="necessary" style="color:red;">*</span></label>
+							<input type="date" id="startDate" name="startDate" class="form-control" required="required"/>
+							<span id="startDateError" class="error-message"></span>
+						</div>
+
+						<%--종료일--%>
+						<div class="form-group">
+							<label for="endDate">종료일&nbsp;<span class="necessary" style="color:red;">*</span></label>
+							<input type="date" id="endDate" name="endDate" class="form-control"/>
+							<span id="endDateError" class="error-message"></span>
+						</div>
+
+						<!-- 보유스킬 -->
+						<div class="form-group3">
+							<label>보유스킬&nbsp;&nbsp;&nbsp;<span class="necessary" style="color:red;">*&nbsp;&nbsp;</span>&nbsp;:&nbsp;&nbsp;&nbsp;</label>
+							<c:forEach var="skillList" items="${skillList}">
+								<label class="skill" for="skill_${skillList.detailCD}">
+									<input type="checkbox" id="skill_${skillList.detailCD}" name="skillCD" value="${skillList.detailCD}"/>
+										${skillList.detailCdName}
+								</label>
+							</c:forEach>
+
+						</div><span id="skillCDError" class="error-message" ></span>
+
+					</div><!-- left끝 -->
+
+					<div class="right">
+						<div class="block"></div>
+
+						<!-- 담당자 -->
+						<div class="form-group2">
+							<label for="manager">담당자</label>
+							<div class="input-group">
+								<input type="text" id="manager" name="manager" class="form-control" placeholder="2글자 이상의 영어나 한글로 작성해주세요" />
+								<span id="managerError" class="error-message" ></span>
+							</div>
+						</div>
+
+						<!-- 전화번호 -->
+						<div class="form-group2">
+							<label for="mPhone">전화번호</label>
+							<input type="text" id="mPhone" name="mPhone" class="form-control" placeholder="번호 중간에 -과 함께 작성해주세요 ex)010-0000-0000, 02-000-0000" />
+							<span id="mpPhoneError" class="error-message" ></span>
+						</div>
+
+						<%--비고--%>
+						<div class="form-group4">
+							<label for="note">비고</label>
+							<textarea id="note" name="note" class="note" placeholder="300자 이하로 입력해주세요" required="required"></textarea>
+							<%--입력글자수--%>
+							<span id="input-count" class="input-count">0 / 300</span>
+							<span id="noteError" class="error-message" ></span>
+						</div>
+
+
+						<!-- 등록버튼 -->
+						<div class="sub-btn">
+							<button type="button" class="sub-form" id="sub-form">등록</button>
+						</div>
+
+					</div><!-- right끝 -->
+
+
+				</div>
 			</div>
-			
+		</form>
+		<button id="pro-delete" class="pro-delete">삭제</button>
+	</div>
 
 
 </div>
+</body>
+<script src="${root}js/projectLower.js"></script>
 <script>
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('resetBtn').addEventListener('click', function() {
-        location.href="${root }project/proMain";
-    });
-});
+	$(document).on('click','#resetBtn' ,function (event){
+		event.preventDefault();
+		window.location.reload();
+	});
 
 </script>
-</body>
 </html>

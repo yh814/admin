@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.test3.dao.UserInfoDao">
+<mapper namespace="com.example.admin.dao.UserInfoDao">
 
     <!--로그인 아이디, 비번 체크-->
     <select id="loginIdPw" resultType="UserInfoDto">
-        SELECT USERID,USERPW
+        SELECT *
         FROM USER_INFO
         WHERE USERID = #{userId}
         AND USERPW = #{userPw}
@@ -31,13 +31,15 @@
         STATUS.DETAILCDNAME AS EmploymentStatusDetailName,
         RANK.DETAILCDNAME AS RankDetailName,
         GRADE.DETAILCDNAME AS GradeDetailName,
-        CONTRACT.DETAILCDNAME AS ContractStatusDetailName
+        CONTRACT.DETAILCDNAME AS ContractStatusDetailName,
+        EMAIL2.DETAILCDNAME AS EmailDetailName
         FROM USER_INFO UI
         LEFT JOIN CODE_DETAIL GENDER ON UI.sexCD = GENDER.DETAILCD AND GENDER.CODEID = 'CD001'
         LEFT JOIN CODE_DETAIL STATUS ON UI.userStatusCD = STATUS.DETAILCD AND STATUS.CODEID = 'CD002'
         LEFT JOIN CODE_DETAIL RANK ON UI.userRankCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
         LEFT JOIN CODE_DETAIL GRADE ON UI.userGradeCD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
         LEFT JOIN CODE_DETAIL CONTRACT ON UI.conStatusCD = CONTRACT.DETAILCD AND CONTRACT.CODEID = 'CD005'
+        LEFT JOIN CODE_DETAIL EMAIL2 ON UI.userEmail2 = EMAIL2.DETAILCD AND EMAIL2.CODEID = 'CD0011'
         ORDER BY UI.USERNUM DESC
     </select>
 
@@ -49,7 +51,7 @@
 
     <!--해당 사원의 보유스킬들-->
     <select id="selectUserSkills" resultType="String">
-        SELECT CD.DETAILCDNAME
+        SELECT CD.DETAILCDNAME ,CD.DETAILCD
         FROM USER_SKILL US
         LEFT OUTER JOIN CODE_DETAIL CD ON US.DETAILCD = CD.DETAILCD
         WHERE CD.CODEID = 'CD009' AND US.USERNUM = #{userNum}
@@ -75,17 +77,24 @@
     <!--회원 등록-->
     <insert id="addUser" useGeneratedKeys="true" keyProperty="userNum" keyColumn="userNum">
         INSERT INTO USER_INFO
-        (USERNUM, USERNAME, USERID, USERPW, USERPHONE, USERBIRTH, addr, ADDRDETAIL, STARTDATE, salary, SEXCD, USERSTATUSCD, USERRANKCD, USERGRADECD, CONSTATUSCD, USEREMAIL, USERIMG)
+        (USERNUM, USERNAME, USERID, USERPW, USERPHONE, USERBIRTH, addr, ADDRDETAIL, STARTDATE, salary, SEXCD, USERSTATUSCD, USERRANKCD, USERGRADECD, CONSTATUSCD, USEREMAIL, USEREMAIL2, USERIMG)
         VALUES
-        (user_info_seq.NEXTVAL, #{userName}, #{userId}, #{userPw}, #{userPhone}, #{userBirth}, #{addr}, #{addrDetail}, #{startDate}, #{salary}, #{sexCD}, #{userStatusCD}, #{userRankCD}, #{userGradeCD}, #{conStatusCD}, #{userEmail}, #{userImg})
+        (user_info_seq.NEXTVAL, #{userName}, #{userId}, #{userPw}, #{userPhone}, #{userBirth}, #{addr}, #{addrDetail}, #{startDate}, #{salary}, #{sexCD}, #{userStatusCD}, #{userRankCD}, #{userGradeCD}, #{conStatusCD}, #{userEmail}, #{userEmail2}, #{userImg})
     </insert>
 
 
     <!--회원 스킬 등록-->
     <insert id="addUserSkill">
-        INSERT INTO USER_SKILL
+        INSERT INTO USER_SKILL(USERNUM, DETAILCD)
         VALUES (#{userNum}, #{detailCD})
     </insert>
+
+    <delete id="deleteUserSkill">
+        DELETE FROM USER_SKILL
+        WHERE USERNUM=#{userNum}
+    </delete>
+
+
 
     <!--회원정보 수정-->
     <update id="modifyUserInfo">
@@ -104,7 +113,9 @@
             USERRANKCD=#{userRankCD},
             USERGRADECD=#{userGradeCD},
             CONSTATUSCD=#{conStatusCD},
-            USERIMG=#{userImg}
+            USERIMG=#{userImg},
+            USEREMAIL = #{userEmail},
+            USEREMAIL2 = #{userEmail2}
         WHERE userNum=#{userNum}
     </update>
 

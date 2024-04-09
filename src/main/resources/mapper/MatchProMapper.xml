@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.test3.dao.MatchProDao">
+<mapper namespace="com.example.admin.dao.MatchProDao">
 
     <!--해당 유저가 한 모든 프로젝트-->
     <select id="getOneUserPros" resultType="MatchProDto">
@@ -38,10 +38,12 @@
         CUSTOMER.DETAILCDNAME AS cusDetailName,
         PROGRESS.DETAILCDNAME AS progressDetailName
         FROM PROJECT_INFO PI
-        LEFT JOIN MATCH_PRO MP ON PI.PRONUM=MP.PRONUM
         LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID = 'CD006'
         LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
-        WHERE MP.USERNUM != #{userNum}
+        WHERE NOT EXISTS (
+            SELECT 1 FROM MATCH_PRO MP
+            WHERE MP.USERNUM = #{userNum} AND MP.PRONUM = PI.PRONUM
+        )
     </select>
 
     <!--해당 유저가 진행하고 있지 않는 프로젝트들의 수-->
@@ -55,13 +57,19 @@
     <!--해당 유저가 진행하고 있지 않는 프로젝트 search-->
     <select id="getSearchPro" resultType="ProjectInfoDto">
         SELECT PI.*,
-        CUSTOMER.DETAILCDNAME AS cusDetailName,
-        PROGRESS.DETAILCDNAME AS progressDetailName
+               CUSTOMER.DETAILCDNAME AS cusDetailName,
+               PROGRESS.DETAILCDNAME AS progressDetailName
         FROM PROJECT_INFO PI
-        LEFT JOIN MATCH_PRO MP ON PI.PRONUM = MP.PRONUM
-        LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID = 'CD006'
-        LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
-        WHERE MP.USERNUM NOT LIKE #{userNum} AND PI.PRONUM LIKE #{searchProName} AND PI.CUSCD LIKE #{searchCusName} AND PI.PROGRESSCD LIKE #{searchProgressName}
+                 LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID = 'CD006'
+                 LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM MATCH_PRO MP
+            WHERE MP.PRONUM = PI.PRONUM AND MP.USERNUM = #{userNum}
+        )
+          AND PI.PRONAME LIKE '${searchProName}'
+          AND PI.CUSCD LIKE '${searchCusName}'
+          AND PI.PROGRESSCD LIKE '${searchProgressName}'
     </select>
 
     <!--유저 프로젝트 추가-->
@@ -76,5 +84,87 @@
         FROM MATCH_PRO
         WHERE PRONUM=#{proNum}
     </select>
+
+    <!--진행하는 프로젝트 삭제-->
+    <delete id="deleteMatch">
+        DELETE FROM MATCH_PRO
+        WHERE USERNUM = #{userNum} AND PRONUM = #{proNum}
+    </delete>
+
+    <!--매치한 프로젝트 수정-->
+    <update id="updateMatchInfo">
+        UPDATE MATCH_PRO
+        SET INPUTDATE = #{inputDate},
+            WITDATE = #{witDate},
+            ROLECD = #{roleCD}
+        WHERE USERNUM=#{userNum} AND PRONUM=#{proNum}
+    </update>
+
+    <!--매치 프로젝트 정보-->
+    <select id="getMatchProInfo" resultType="ProjectInfoDto">
+        SELECT PI.*,
+               PROGRESS.DETAILCDNAME AS progressDetailName
+        FROM PROJECT_INFO PI
+                 LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
+        WHERE PI.PRONUM=#{proNum}
+    </select>
+
+    <!--해당 프로젝트에 참여한 모든 유저들-->
+    <select id="getOneProUsers" resultType="MatchProDto">
+        SELECT MP.*, UI.*, PI.*,
+               RANK.DETAILCDNAME AS rankDetailName,
+               GRADE.DETAILCDNAME AS gradeDetailName,
+               CUSTOMER.DETAILCDNAME AS cusDetailName,
+               PROGRESS.DETAILCDNAME AS progressDetailName,
+               ROLE.DETAILCDNAME AS roleDetailName
+        FROM MATCH_PRO MP
+                 LEFT JOIN USER_INFO UI ON UI.USERNUM = MP.USERNUM
+                 LEFT JOIN PROJECT_INFO PI ON PI.PRONUM = MP.PRONUM
+                 LEFT JOIN CODE_DETAIL RANK ON UI.USERRANKCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
+                 LEFT JOIN CODE_DETAIL GRADE ON UI.USERGRADECD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
+                 LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID = 'CD006'
+                 LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID = 'CD007'
+                 LEFT JOIN CODE_DETAIL ROLE ON MP.ROLECD = ROLE.DETAILCD AND ROLE.CODEID = 'CD008'
+        WHERE MP.PRONUM=#{proNum}
+    </select>
+
+    <!--해당 프로젝트에 참여하지 않는 유저들-->
+    <select id="matchAllUserList" resultType="UserInfoDto">
+        SELECT UI.*,
+               STATUS.DETAILCDNAME AS employmentStatusDetailName,
+               RANK.DETAILCDNAME AS RankDetailName,
+               GRADE.DETAILCDNAME AS GradeDetailName
+        FROM USER_INFO UI
+                 LEFT JOIN CODE_DETAIL STATUS ON UI.USERSTATUSCD = STATUS.DETAILCD AND STATUS.CODEID = 'CD002'
+                 LEFT JOIN CODE_DETAIL RANK ON UI.USERRANKCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
+                 LEFT JOIN CODE_DETAIL GRADE ON UI.USERGRADECD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
+        WHERE NOT EXISTS (
+            SELECT 1 FROM MATCH_PRO MP
+            WHERE MP.PRONUM = #{proNum} AND MP.USERNUM = UI.USERNUM
+        )
+    </select>
+
+    <!--해당 프로젝트에 참여하지 않는 유저들 search-->
+    <select id="getSearchUser" resultType="UserInfoDto">
+        SELECT UI.*,
+               STATUS.DETAILCDNAME AS employmentStatusDetailName,
+               RANK.DETAILCDNAME AS RankDetailName,
+               GRADE.DETAILCDNAME AS GradeDetailName
+        FROM USER_INFO UI
+                 LEFT JOIN CODE_DETAIL STATUS ON UI.USERSTATUSCD = STATUS.DETAILCD AND STATUS.CODEID = 'CD002'
+                 LEFT JOIN CODE_DETAIL RANK ON UI.USERRANKCD = RANK.DETAILCD AND RANK.CODEID = 'CD003'
+                 LEFT JOIN CODE_DETAIL GRADE ON UI.USERGRADECD = GRADE.DETAILCD AND GRADE.CODEID = 'CD004'
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM MATCH_PRO MP
+            WHERE MP.PRONUM = #{proNum} AND MP.USERNUM = UI.USERNUM
+        )
+          AND UI.USERNAME LIKE '${searchUserName}'
+          AND UI.USERGRADECD LIKE '${searchGradeName}'
+          AND UI.USERSTATUSCD LIKE '${searchStatusName}'
+    </select>
+
+
+
 
 </mapper>

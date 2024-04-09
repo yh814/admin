@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.test3.dao.BoardDao">
+<mapper namespace="com.example.admin.dao.BoardDao">
     <!-- 공지사항 조회(메인페이지 3개) -->
     <select id="getNotice" resultType="BoardDto">
         SELECT * FROM (
@@ -39,8 +39,30 @@
     <select id="getMainFreeBoard" resultType="BoardDto">
         SELECT B.*, CD.DETAILCDNAME
         FROM BOARD B
-        LEFT OUTER JOIN CODE_DETAIL CD ON B.BOARDCATEGORY = CD.DETAILCD
+                 LEFT OUTER JOIN CODE_DETAIL CD ON B.BOARDCATEGORY = CD.DETAILCD
         WHERE CD.CODEID = 'CD010' AND CD.DETAILCD='2'
+        <if test="searchContents != null or searchTitle != null or searchUserId != null">
+            <if test="searchContents != null or searchTitle != null or searchUserId != null">
+                AND (
+                <if test="searchContents != null">
+                    B.BOARDCONTENTS LIKE '%' || #{searchContents} || '%'
+                </if>
+                <if test="searchTitle != null">
+                    <if test="searchContents != null">
+                        OR
+                    </if>
+                    B.BOARDTITLE LIKE '%' || #{searchTitle} || '%'
+                </if>
+                <if test="searchUserId != null">
+                    <if test="searchContents != null or searchTitle != null">
+                        OR
+                    </if>
+                    B.USERID LIKE '%' || #{searchUserId} || '%'
+                </if>
+                )
+            </if>
+        </if>
+
         ORDER BY B.BOARDNUM DESC
     </select>
 

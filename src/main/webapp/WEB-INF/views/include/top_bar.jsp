@@ -1,84 +1,109 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var='root' value = '${pageContext.request.contextPath }/'/>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
 <head>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" href="${root }css/top_bar.css">
-
+    <title>Title</title>
 </head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-/*     // 사원 관리 드롭다운
-    var userSec1 = document.querySelector('.dropdown-menu1');
-    var userDropdown1 = document.querySelector('.user-dropdown1');
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
 
-    userSec1.addEventListener('mouseover', function() {
-        userDropdown1.style.display = 'block';
-    });
+    .top-sec {
+        width: 100%;
+        height: 55px;
+        top: 0;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        background-color: white;
+        position: fixed;
+        z-index: 1000;
+        font-weight: 500;
+        font-size: 15px;
+        color: rgb(51, 51, 51);
+        line-height: 35px;
+        letter-spacing: -1px;
+        text-align: center;
+    }
 
-    userDropdown1.addEventListener('mouseleave', function() {
-        this.style.display = 'none';
-    });
-     */
-    // 프로젝트 관리 드롭다운
-    var proSec = document.querySelector('.dropdown-menu2');
-    var proDropdown = document.querySelector('.user-dropdown2');
+    #session_info{
+        margin-right: 40px;
+    }
 
-    proSec.addEventListener('mouseover', function() {
-        proDropdown.style.display = 'block';
-    });
+    .logout{
+        margin-left: 20px;
+        margin-right: 40px;
+        border: none;
+        border-radius: 5px;
+        background: #5F9EA0;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-    proDropdown.addEventListener('mouseleave', function() {
-        this.style.display = 'none';
-    });
-});
-
-</script>
-
+    .my-page{
+        border: none;
+        border-radius: 5px;
+        background: #a6acac8c;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+        width: 100px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
 <body>
-
-<div class="topbar-sec">
-	<div class="top-bar-con">
-		<!-- 로고 이미지 -->
-		<div class="logo-img">
-			<a href="${root }board/homePage">
-				<img src="${root }image/logo.png" alt="logoImg" style="width: 230px; margin-left: 20px;"/>
-			</a>
-		</div>
-		
-		<!-- 메뉴 -->
-		<div class="menu-box">
-			<div>
-				<label>MENU</label>
-			</div>
-			
-			<!--  사원 카테고리  -->
-			<div>			
-				<a href="${root }user/allUserInfo" class="dropdown-menu1">사원 관리</a>
-			 	<!--<ul class="user-dropdown1">
-					<li class="dropdown-list1"><a href=""></a></li>
-					<li class="dropdown-list1"><a href=""></a></li>
-					<li class="dropdown-list1"><a href="">c</a></li>		
-				</ul> -->
-			</div>
-			
-			<!--  프로젝트 카테고리  -->
-			<div>
-				<a href="${root }project/proMain"  class="dropdown-menu2">프로젝트 관리</a>
-				<ul class="user-dropdown2">
-					<li class="dropdown-list2"><a href="">진행중인 프로젝트</a></li>
-					<li class="dropdown-list2"><a href="">중단된 프로젝트</a></li>
-					<li class="dropdown-list2"><a href="">완료된 프로젝트</a></li>		
-				</ul>
-			</div>
-		
-		</div>
-	
-	</div>
-	
-	</div>
-
-	
-	
+<div class="top-sec">
+    <div id="session_info"></div>
+    <button class="my-page"><a href="/user/myPage">내 정보</a></button>
+    <button class="logout">로그아웃</button>
+</div>
 </body>
+
+<script>
+    $(document).ready(function (){
+        getSessionInfo();
+    })
+
+    function getSessionInfo(){
+        $.ajax({
+            url: "/getSessionInfo",
+            type: "GET",
+            success: function (data){
+                $("#session_info").text(data + " 님");
+            },
+            error: function (xhr, status, error){
+                console.error("Failed to fetch session info:",error);
+            }
+        })
+    }
+
+    $(".logout").click(function (){
+        const logout = confirm("로그아웃하시겠습니까?");
+        if(logout){
+            $.ajax({
+                url:"/user/logout",
+                type: "GET",
+                success: function (){
+                    location.href = '/login';
+                },
+                error: function (xhr, status, error){
+                    console.error("Failed to fetch session info:",error);
+                }
+            });
+        }else {
+            return;
+        }
+    });
+</script>
+</html>

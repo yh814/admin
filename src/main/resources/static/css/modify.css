@@ -2,19 +2,19 @@
 
 body{
  	font-family: Arial;
-    background: #8B9EAA;
+    background: #BACDDB;
 }
 
 
 .modify-sec {
-    margin-left: 40px;
-    margin-top: 60px;
-    width: 93.7%;
-    height: 870px;
+    margin-top: 80px;
+    margin-left: 21.5%;
+    width: 73%;
+    height: 775px;
     background-color: #fff;
     padding: 15px;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
 .modalMain{
@@ -28,8 +28,20 @@ body{
     width: 100%; /* 추가: flex item을 100%로 설정하여 flex 컨테이너 내에서 나란히 표시 */
 }
 
+.img-title{
+    width: 100%;
+    margin-left: -70px;
+    display: flex;
+    height: fit-content;
+    font-size: 16px;
+    font-weight: 800;
+    color: rgb(51, 51, 51);
+    margin-bottom: 40px;
+    justify-content: flex-start;
+}
+
 .userImg {
-    margin-top: 90px;
+    margin-top: 50px;
     margin-left: 100px;
     width: 20%;
     height: 800px;
@@ -38,6 +50,12 @@ body{
     justify-content: flex-start;
     align-items: center;
 }
+
+img#previewImg {
+    padding: 20px;
+    border: 2px solid #607d8b;
+}
+
 
 input[type="file"]::-webkit-file-upload-button {
     background-color: #fff;
@@ -49,22 +67,65 @@ input[type="file"]::-webkit-file-upload-button {
     transition: background-color 0.3s ease;
 }
 
-.getImg{
-    background-color: #8B9EAA;
-    color: #fff;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
+.img-btns{
+    margin-top: 30px;
+    margin-bottom: 20px;
+    width: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.getImg:hover {
+.btn-primary {
+    display: flex;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background: #1976D2;
+    color: white;
+    font-size: 15px;
+    width: 100px;
+    height: 30px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.btn-primary:hover {
     background-color: #2980b9;
 }
 
-.getImg{
-    margin-top: 60px;
+
+.remove-img{
+    display: flex;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background: #BDBDBD;
+    color: black;
+    font-size: 15px;
+    width: 100px;
+    height: 30px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.userInfo-default{
+    display: flex;
+    width: 100%;
+    height: 80px;
+    padding: 8px;
+    box-sizing: border-box;
+    flex-direction: column;
+}
+
+.userInfo-default input {
+    width: 250px;
+    height: 35px;
 }
 
 .left{
@@ -100,13 +161,11 @@ input[type="file"]::-webkit-file-upload-button {
     display: block;
 }
 
-.form-group input,
-.form-group2 input,
-.form-group select,
-.form-group2 select {
-    width: calc(100% - 10px); /* 수정: 입력 요소 너비에서 여백을 뺀 값으로 설정 */
-    height: 35px;
+.form-control {
+    width: 50%;
     padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
     box-sizing: border-box;
 }
 
@@ -122,49 +181,43 @@ input[type="file"]::-webkit-file-upload-button {
 
 }
 
-
-.btn-primary {
-    margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    background: #1976D2;
-    color: white;
-    font-size: 15px;
-    cursor: pointer;
-    margin-bottom: 10px;
-}
-
-.close-btn{
-    margin-top: 30px;
-    width: 100%;
+.email-input{
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
 }
 
-.btn-close{
-    margin: 10px 0;
-    border: none;
-    border-radius: 5px;
-    background: gray;
+.sub-btn {
+    display: flex;
+    justify-content: center; /* 버튼을 모달 중앙에 위치 */
+}
+
+.sub-form {
+    margin-left: 120px;
+    display: flex;
+    width: 150px;
+    height: 40px;
+    padding: 5px 5px;
+    background-color: #28a745ba;
     color: white;
-    font-size: 15px;
+    border: none;
+    border-radius: 4px;
+    font-size: 19px;
     cursor: pointer;
-    margin-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+.sub-form:hover {
+    background-color: #218838;
 }
 
 .error-message {
-    display: block; /* 에러 메시지를 블록 요소로 만들어 줄 바꿈 효과를 줍니다. */
-    color: red; /* 에러 메시지의 색상을 빨간색으로 지정합니다. */
-    margin-top: 5px; /* 입력 필드와 에러 메시지 사이의 간격을 조정합니다. */
-    font-size: 12px;
-    height: 20px;
-    width: 100%;
+    color: #dc3545;
+    font-size: 14px;
 }
 
-.form-group3 {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+.necessary {
+    color: #dc3545;
 }
 
 .block{
@@ -175,17 +228,21 @@ input[type="file"]::-webkit-file-upload-button {
     font-size: 15px;
 }
 
-.input-group-append{
-    display: flex;
+.autocompletePreview {
+    position: absolute;
+    left:82.3%;
+    width: fit-content;
+    box-sizing: border-box;
+    color: gray;
+    pointer-events: none;
+    font-size: 12px;
+    align-content: center;
+    letter-spacing: 1px;
 }
 
-span.input-group-text {
-    width: 50px;
+.email-errors{
     display: flex;
-    align-items: center;
-}
-
-.skill{
-    margin-right: 12px;
-    padding-bottom: 5px;
+    flex-direction: column;
+    width: fit-content;
+    height: fit-content;
 }

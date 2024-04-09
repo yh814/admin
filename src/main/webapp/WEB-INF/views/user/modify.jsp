@@ -1,65 +1,68 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8" isELIgnored="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <c:set var='root' value="${pageContext.request.contextPath }/" />
-
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Modify</title>
-
+</head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
-
+	const emailList = [
+		<c:forEach var="email" items="${emailList}" varStatus="status">
+		{ detailCD: '${email.detailCD}', detailCdName: '${email.detailCdName}' }<c:if test="${!status.last}">,</c:if>
+		</c:forEach>
+	];
 </script>
-</head>
-
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <c:import url="/WEB-INF/views/include/top_bar.jsp" />
+<c:import url="/WEB-INF/views/include/side_bar.jsp" />
 <link rel="stylesheet" href="${root}css/modify.css">
 <body>
 
 <div class="modify-sec">
-	<form  enctype="multipart/form-data" id="modify" class="modify">
+	<form action="${root}/modify_user" method="post" enctype="multipart/form-data" id="modify" class="modify">
 		<div class="modal-content">
 			<!-- 메인 -->
 			<div class="modalMain">
 				<!-- 이미지 -->
 				<div class="userImg">
-					<img src="${root}image/pre-photo.png" alt="기본이미지" style="width: 150px; height: 200px;"/>
-					<input type="file" accept="image/gif, image/jpeg, image/png" class="getImg" id="userImgFile" name="userImgFile" required="required"/>
+					<div class="block">
+						<span class="block">* 표시가 있는 칸은 필수 입력입니다.</span>
+					</div>
+					<span class="img-title">프로필 이미지</span>
+					<img src="${root}upload/${userInfo.userImg}" id="previewImg" alt="기본이미지" style="width: 150px; height: 200px;"/>
+					<input type="file" accept="image/gif, image/jpeg, image/png" class="getImg" id="userImgFile" name="userImgFile" style="display:none;"/>
+					<div class="img-btns">
+						<label for="userImgFile" class="btn btn-primary">이미지 변경</label>
+						<button class="remove-img">되돌리기</button>
+					</div>
+					<input type="hidden" id="existingImg" name="existingImg" value="${userInfo.userImg}" />
 					<span id="userImgError" class="error-message" ></span>
+					<div class="userInfo-default">
+						<label for="userNum">사원번호</label>
+						<input type="text" id="userNum" name="userNum" class="form-control" readonly="readonly" style="background-color: lightgray" value="${userInfo.userNum}"/>
+					</div>
+					<!-- 아이디 -->
+					<div class="userInfo-default">
+						<label for="userId">아이디</label>
+						<div class="id-sec">
+							<input type="text" id="userId" name="userId" class="form-control" placeholder="" readonly="readonly" style="background-color: lightgray;" value="${userInfo.userId}"/>
+						</div>
+					</div>
 				</div>
 
 				<!-- 왼쪽 -->
 				<div class="left">
-
-					<div class="block">
-						<span class="block">* 표시가 있는 칸은 필수 입력입니다.</span>
-					</div>
-
-					<!-- 사원명 -->
-					<div class="form-group">
-						<label for="userName">사원번호</label>
-						<input type="text" id="userNum" name="userNum" class="form-control" readonly="readonly" style="background-color: lightgray" value="${userInfo.userNum}"/>
-					</div>
-
 					<!-- 사원명 -->
 					<div class="form-group">
 						<label for="userName">사원명&nbsp;<span class="necessary" style="color:red;">*</span></label>
 						<input type="text" id="userName" name="userName" class="form-control" placeholder="2~10자 사이로 입력해주세요" required="required" value="${userInfo.userName}"/>
 						<span id="userNameError" class="error-message" ></span>
-					</div>
-
-					<!-- 아이디 -->
-					<div class="form-group">
-						<label for="userId">아이디</label>
-						<div class="id-sec">
-							<input type="text" id="userId" name="userId" class="form-control" placeholder="" readonly="readonly" style="background-color: lightgray;" value="${userInfo.userId}"/>
-
-						</div>
-
 					</div>
 
 					<!-- 비밀번호 -->
@@ -79,7 +82,7 @@
 					<!-- 생년월일 -->
 					<div class="form-group">
 						<label for="userBirth">생년월일&nbsp;<span class="necessary" style="color:red;">*</span></label>
-						<input type="date" id="userBirth" name="userBirth" placeholder="생년월일은 8자리의 숫자로 입력해 주세요. ex)1990-01-01" required="required" value="${userInfo.userBirth}"/>
+						<input type="date" id="userBirth" name="userBirth" class="form-control" placeholder="생년월일은 8자리의 숫자로 입력해 주세요. ex)1990-01-01" required="required" value="${userInfo.userBirth}"/>
 						<span id="userBirthError" class="error-message" ></span>
 					</div>
 
@@ -97,8 +100,10 @@
 
 					<!-- 주소 -->
 					<div class="form-group">
-						<label for="addr">주소&nbsp;<span class="necessary" style="color:red;">*</span></label>
+						<label for="addr">주소&nbsp;<span class="necessary" style="color:red;">*</span></label><div>
 						<input type="text" id="addr" name="addr" class="form-control" required="required" value="${userInfo.addr}"/>
+						<button id="search-addr" onclick="execDaumPostcode()">주소 검색</button>
+						</div>
 						<span id="addrError" class="error-message"></span>
 					</div>
 
@@ -112,9 +117,10 @@
 					<!-- 보유스킬 -->
 					<div class="form-group3">
 						<label>보유스킬&nbsp;&nbsp;&nbsp;<span class="necessary" style="color:red;">*&nbsp;&nbsp;</span>&nbsp;:&nbsp;&nbsp;&nbsp;</label>
+						<input type="hidden" id="getUserSkills" value="${userInfo.skillCD}">
 						<c:forEach var="skillList" items="${skillList}">
 							<label class="skill" for="skill_${skillList.detailCD}">
-								<input type="checkbox" id="skill_${skillList.detailCD}" name="skillCD" value="${skillList.detailCD}" />
+								<input type="checkbox" id="skill_${skillList.detailCD}" name="skillCD" value="${skillList.detailCD}" ${fn:contains(userInfo.skillCD,skillList.detailCdName) ? 'checked' : ''}/>
 									${skillList.detailCdName}
 							</label>
 						</c:forEach>
@@ -124,7 +130,6 @@
 				</div><!-- left끝 -->
 
 				<div class="right">
-					<div class="block"></div>
 					<!-- 입사일 -->
 					<div class="form-group2">
 						<label for="startDate">입사일&nbsp;<span class="necessary" style="color:red;">*</span></label>
@@ -203,8 +208,22 @@
 					<!-- 이메일 -->
 					<div class="form-group2">
 						<label for="userEmail">이메일</label>
-						<input type="email" id="userEmail" name="userEmail" class="form-control" value="${userInfo.userEmail}"/>
+						<div class="email-input">
+							<input type="text" id="userEmail" name="userEmail" class="form-control" value="${userInfo.userEmail}" />&nbsp;&nbsp;@&nbsp;&nbsp;
+							<input type="text" id="directInput" name="userEmail2" class="form-control" value="${userInfo.userEmail2}">
+							<div id="autocompletePreview" class="autocompletePreview" style="color: gray;"></div>
+							<select class="form-control" onchange="decovery(this);">
+								<option value="default">--직접 입력--</option>
+								<c:forEach var="emailList" items="${emailList}">
+									<option value="${emailList.detailCD}">${emailList.detailCdName}</option>
+								</c:forEach>
+
+							</select>
+						</div>
+					</div>
+					<div class="email-errors">
 						<span id="userEmailError" class="error-message" ></span>
+						<span id="userEmail2Error" class="error-message" ></span>
 					</div>
 
 					<!-- 등록버튼 -->
@@ -220,9 +239,9 @@
 	</form>
 </div>
 
-
-
 </body>
+
+<script src="${root}js/modify.js"></script>
 </html>
 
 

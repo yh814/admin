@@ -10,8 +10,8 @@
 <meta charset="UTF-8">
 <title>Notice</title>
 </head>
-
 <c:import url="/WEB-INF/views/include/top_bar.jsp" />
+<c:import url="/WEB-INF/views/include/side_bar.jsp" />
 <link rel="stylesheet" href="${root }css/board.css">
 
 <body>

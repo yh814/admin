@@ -32,10 +32,19 @@
 		        <label>${loginError}</label>
 		    </div>
 		</c:if>
+
+
     </form>
+
     <div class="join-button">
         <a href="${root}user/join" class="join-btn">Join</a>
+
+        <div class="findInfo">
+            <label class="findID">아이디 찾기</label>
+            <label class="findPW">비밀번호 찾기</label>
+        </div>
     </div>
+
 </div>
 
    

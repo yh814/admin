@@ -8,183 +8,27 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>사원 리스트</title>
+    <title>사원-프로젝트 관리</title>
 </head>
 <c:import url="/WEB-INF/views/include/top_bar.jsp" />
-<link rel="stylesheet" href="${root }css/match.css">
+<c:import url="/WEB-INF/views/include/side_bar.jsp" />
+<link rel="stylesheet" href="${root }css/userMatch.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
 <script>
-$(document).ready(function() {
-	
-    $('tr').click(function(event) {
-		const checkbox = $(this).find('.check-match');
-        checkbox.prop('checked', !checkbox.prop('checked'));
-        event.stopPropagation();
-    });
-
-    $('.check-match').click(function(event) {
-        event.stopPropagation();
-    });
-    
-    
-    
-    /* 모달 */
-    $("#add").click(function() {
-        $("#add-modal").css("display", "block");
-    });
-    
-    $('#searchProName, #searchCusName, #searchProgressName').keypress(function(event) {
-        // 엔터키가 눌렸을 때
-        if (event.which === 13) {
-            event.preventDefault(); // 폼의 기본 제출 동작을 방지
-            $('#searchButton').click(); // 조회 버튼 클릭
-        }
-    });
-    
-    /* 프로젝트 검색 */
-    $('#searchButton').click(function(event) {
-		const searchProName = $('#searchProName').val();
-		const searchCusName = $('#searchCusName').val();
-		const searchProgressName = $('#searchProgressName').val();
-		const userNum = $('#userNum').val();
-
-        $.ajax({
-            type: 'GET',
-            url: '/userMatchProSearch',
-			dataType: 'json',
-            data: {
-                searchProName: searchProName,
-                searchCusName: searchCusName,
-                searchProgressName: searchProgressName,
-                userNum: userNum
-            },
-            
-            success: function(data) {
-                const tableBody = $('.main-search');
-                tableBody.empty();
-
-                if (data && data.length > 0) {
-	                data.forEach(function(project) {
-						const row = '<tr>' +
-	                        '<td><input type="checkbox" id="' + project.proNum + '" class="check-pro"/></td>' +
-	                        '<td>' + project.proNum + '</td>' +
-	                        '<td>' + project.proName + '</td>' +
-	                        '<td>' + project.cusDetailName + '</td>' +
-	                        '<td>' + project.startDate + '</td>' +
-	                        '<td>' + project.endDate + '</td>' +
-	                        '<td>' + project.progressDetailName + '</td>' +
-	                        '<td>' + project.userCnt + '명</td>' + // 수정: 프로젝트별 사용자 수
-	                        '</tr>';
-	                    tableBody.append(row);
-	                });
-	                $('.pagination').hide();
-	
-	                console.log(data);
-                }else {
-                    const row = '<tr>' + '<td colspan="10">데이터가 없습니다</td>' + '</tr>';
-                    tableBody.append(row);
-                }
-                
-	        },
-            error: function(xhr, status, error) {
-                // 오류 처리
-            }
-        });
-    });
-    
-    /* 모달창 닫기 */
-    $("#closeModalBtn").click(function() {
-        const confirmAdd = confirm('선택된 프로젝트가 모두 취소됩니다.\n그래도 닫으시겠습니까?');
-        if (confirmAdd) {
-
-            $("#add-modal").css("display", "none");
-            
-            window.location.reload();
-        } else {
-            return;
-        }        
-    });
-    
-	/* 검색 조건 초기화 */
-    $('#resetBtn').click(function() {
-        $('#searchProName').val('');
-        $('#searchCusName').val('');
-        $('#searchProgressName').val('');
-
-        $.ajax({
-            type: 'GET',
-            url: '/userMatchProSearch',
-			dataType: 'json',
-            data: {
-                searchProName: '',
-                searchCusName: '',
-                searchProgressName: '',
-                userNum: $('#userNum').val()
-            },
-            
-            success: function(data) {
-                const tableBody = $('.main-search');
-                tableBody.empty();
-
-                if (data && data.length > 0) {
-                    data.forEach(function(project) {
-						let row;
-						row = '<tr>' +
-								'<td><input type="checkbox" id="' + project.proNum + '" class="check-pro"/></td>' +
-								'<td>' + project.proNum + '</td>' +
-								'<td>' + project.proName + '</td>' +
-								'<td>' + project.cusDetailName + '</td>' +
-								'<td>' + project.startDate + '</td>' +
-								'<td>' + project.endDate + '</td>' +
-								'<td>' + project.progressDetailName + '</td>' +
-								'<td>' + project.userCnt + '명</td>' +
-								'</tr>';
-                        tableBody.append(row);
-                    });
-                    $('.pagination').show();
-                } else {
-					const row = '<tr><td colspan="10">데이터가 없습니다</td></tr>';
-                    tableBody.append(row);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error occurred during the reset search: ", error);
-            }
-        });
-    });
-
-   	//조회, 초기화 누르기 전 tr
-    $('tr').click(function(event) {
-		const checkbox = $(this).find('.check-pro');
-        checkbox.prop('checked', !checkbox.prop('checked'));
-        event.stopPropagation();
-    });
-
-    $('.check-pro').click(function(event) {
-        event.stopPropagation();
-    });
-    
-    //조회, 초기화 누른 후 tr
-    $('.main-search').on('click', 'tr', function(event) {
-		const checkbox = $(this).find('.check-pro');
-        checkbox.prop('checked', !checkbox.prop('checked'));
-        event.stopPropagation();
-    });
-
-    $('.main-search').on('click', '.check-pro', function(event) {
-        event.stopPropagation();
-    });
-
-    
-});
+	const roleList = [
+		<c:forEach items="${roleList}" var="role" varStatus="status">
+		{detailCD: "${role.detailCD}", detailCdName: "${role.detailCdName}"}<c:if test="${!status.last}">, </c:if>
+		</c:forEach>
+	];
 </script>
 <body>
 
-	<div class="userInfo-sec" >
-	        <p class="userInfo-title">사원정보</p>
-	        <div class="userInfo-box">
-	            <div class="userInfo-item">
-	                <p class="mini-title">사원명 : </p>
+<div class="userInfo-sec">
+	<p class="userInfo-title">사원정보</p>
+	<div class="userInfo-box">
+		<div class="userInfo-item">
+			<p class="mini-title">사원명 : </p>
 	                <input type="text" id="userName"  name="userName" readonly="readonly" class="input-info" value="${userMatchInfo.userName }">
 	                <p class="mini-title">기술등급 : </p>
 	                <input type="text" id="rankDetailName"  name="rankDetailName" readonly="readonly" class="input-info"  value="${userMatchInfo.rankDetailName }">
@@ -193,63 +37,72 @@ $(document).ready(function() {
 	            </div>
 	        </div>	    
 	</div>
+
 	
 	<div class="userProInfo-sec">
 		<p class="userInfo-title">프로젝트 리스트</p>
-		<table class="table">
-        <thead>
-            <tr>
-            	<th><input type="checkbox" id="check-match" class="check-match" disabled/></th>
-                <th>프로젝트번호</th>
-                <th>프로젝트명</th>
-                <th>고객사명</th>
-                <th>진행현황</th>
-                <th>프로젝트 시작일</th>
-                <th>프로젝트 종료일</th>
-                <th>투입일</th>
-                <th>철수일</th>
-                <th>역할</th>
-                <th>상세수정</th>
-            </tr>
-        </thead>
-        <tbody class="main">
-	        <c:choose>
-	        	<c:when test="${empty userProList}">
-			        <tr>
-			            <td colspan="11">데이터가 없습니다.</td>
-			        </tr>
-			    </c:when>
-			    <c:otherwise>
-		            <c:forEach var="match" items="${userProList}">
-		                <tr>
-		                	<td><input type="checkbox" id="${match.proNum }" class="check-match"/></td>
-		                    <td>${match.proNum}</td>
-		                    <td>${match.proName}</td>
-		                    <td>${match.cusDetailName}</td>
-		                    <td>${match.progressDetailName}</td>
-		                    <td>${match.startDate}</td>
-		                    <td>${match.endDate}</td>
-		                    <td>${match.inputDate}</td>
-		                    <td>${match.witDate}</td>
-		                    <td>${match.roleDetailName}</td>
-		                    <td>
-		                        <a href="#">
-		                            <button class="match-modify">상세/수정</button>
-		                        </a>
-		                    </td>
-		                </tr>
-		            </c:forEach>
-	            </c:otherwise>
-            </c:choose>
-        </tbody>     
-    </table>
+		<div class="showProList">
+			<table class="table">
+				<thead>
+					<tr>
+						<th><input type="checkbox" id="check-match" class="check-match" disabled/></th>
+						<th>프로젝트번호</th>
+						<th>프로젝트명</th>
+						<th>고객사명</th>
+						<th>진행현황</th>
+						<th>프로젝트 시작일</th>
+						<th>프로젝트 종료일</th>
+						<th>투입일</th>
+						<th>철수일</th>
+						<th>역할</th>
+						<th>수정</th>
+					</tr>
+				</thead>
+				<tbody class="main">
+					<c:choose>
+						<c:when test="${empty userProList}">
+							<tr>
+								<td colspan="11">데이터가 없습니다.</td>
+							</tr>
+						</c:when>
+						<c:otherwise>
+							<c:forEach var="match" items="${userProList}">
+								<tr>
+									<td><input type="checkbox" id="${match.proNum }" class="check-match"/></td>
+									<td>${match.proNum}</td>
+									<td>${match.proName}</td>
+									<td>${match.cusDetailName}</td>
+									<td>${match.progressDetailName}</td>
+									<td>${match.startDate}</td>
+									<td>${match.endDate}</td>
+									<td><input type="date" name="inputDate" value="${match.inputDate}" readonly="readonly" required="required"/></td>
+									<td><input type="date" name="witDate" value="${match.witDate}" readonly="readonly"/></td>
+									<td><select id="roleCD" name="roleCD" class="form-control" required="required" disabled="disabled" >
+										<option value="">--성별 선택--</option>
+										<c:forEach var="roleList" items="${roleList}">
+											<option value="${roleList.detailCD}" ${roleList.detailCD==match.roleCD ? 'selected':''} >${roleList.detailCdName}</option>
+										</c:forEach>
+									</select></td>
+									<td>
+										<button class="match-modify">수정</button>
+										<button class="set-modify" style="display: none;">저장</button>
+									</td>
+								</tr>
+							</c:forEach>
+						</c:otherwise>
+					</c:choose>
+				</tbody>
+			</table>
+		</div>
     
     	<div class="pro-btn">
-			<button class="add" id="add">프로젝트 추가</button> 
+			<button class="add" id="add">프로젝트 추가</button>
+			<button class="delete">프로젝트 삭제</button>
+		</div>
 			<!-- 프로젝트 추가 모달 -->
 				<form id="add-modal" class="add-modal">
-					<input type="hidden" id="userNum" value="${userMatchInfo.userNum}" />
-					<div class="modal">		
+					<input type="hidden" id="userNum" value="${userMatchInfo.userNum}" data-userNum="${userMatchInfo.userNum}"/>
+					<div class="modal">
 						<!-- 닫기버튼 -->
 						<span class="close" id="closeModalBtn">&times;</span>
 												
@@ -284,90 +137,87 @@ $(document).ready(function() {
 				        
 				        <div class="search-result">
 				        	<p class="result-title">프로젝트 리스트</p>
-						    <table class="result-table">
-						        <thead>
-						            <tr>
-						            	<th><input type="checkbox" id="check-pro" class="check-pro" disabled/></th>
-						                <th>프로젝트 번호</th>
-						                <th>프로젝트명</th>
-						                <th>고객사</th>
-						                <th>시작일</th>
-						                <th>종료일</th>
-						                <th>진행상태</th>
-						                <th>총인원</th>					                
-						            </tr>
-						        </thead>
-						        <tbody class="main-search">
-						            <c:forEach var="project" items="${allProList}" >
-						                <tr>
-						                	<td><input type="checkbox" id="${project.proNum }" class="check-pro"/></td>
-						                    <td>${project.proNum}</td>
-						                    <td>${project.proName}</td>
-						                    <td>${project.cusDetailName}</td>
-						                    <td>${project.startDate}</td>
-						                    <td>${project.endDate}</td>
-						                    <td>${project.progressDetailName}</td>
-						                    <td>${userCnt}명</td>
-						                </tr>
-						            </c:forEach>
-						        </tbody>      
-						    </table>
+							<div class="showList">
+								<table class="result-table">
+									<thead>
+										<tr>
+											<th><input type="checkbox" id="check-pro" class="check-pro"/></th>
+											<th>프로젝트 번호</th>
+											<th>프로젝트명</th>
+											<th>고객사</th>
+											<th>시작일</th>
+											<th>종료일</th>
+											<th>진행상태</th>
+											<th>총인원</th>
+										</tr>
+									</thead>
+									<tbody class="main-search">
+										<c:forEach var="project" items="${allProList}" >
+											<tr>
+												<td><input type="checkbox" id="${project.proNum }" class="check-pro"
+													data-proNum="${project.proNum}"
+													data-proName="${project.proName}"
+													data-progressDetailName="${project.progressDetailName}"
+													data-startDate="${project.startDate}"
+													data-endDate="${project.endDate}"/>
+												</td>
+												<td>${project.proNum}</td>
+												<td>${project.proName}</td>
+												<td>${project.cusDetailName}</td>
+												<td>${project.startDate}</td>
+												<td>${project.endDate}</td>
+												<td>${project.progressDetailName}</td>
+												<td>${project.userCnt}명</td>
+											</tr>
+										</c:forEach>
+									</tbody>
+								</table>
+							</div>
 						    <div class="pagination-main">
-								<ul class="pagination">
-									<c:choose>
-									<c:when test="${pageBean.prevPage <= 0 }">
-									<li class="page-item-desabled">
-										<a href="#" class="page-link">이전</a>
-									</li>
-									</c:when>
-									<c:otherwise>
-									<li class="page-item">
-										<a href="${root }match/userMatch#Modal&page=${pageBean.prevPage}" class="page-link">이전</a>
-									</li>
-									</c:otherwise>
-									</c:choose>
-									
-									
-									<c:forEach var='idx' begin="${pageBean.min }" end='${pageBean.max }'>
-									<c:choose>
-									<c:when test="${idx == pageBean.currentPage }">
-									<li class="page-item-active">
-										<a href="${root }match/userMatch#Modal?page=${idx}" class="page-link">${idx }</a>
-									</li>
-									</c:when>
-									<c:otherwise>
-									<li class="page-item">
-										<a href="${root }match/userMatch#Modal?page=${idx}" class="page-link" class="page-link">${idx }</a>
-									</li>
-									</c:otherwise>
-									</c:choose>
-									
-									</c:forEach>
-									
-									<c:choose>
-									<c:when test="${pageBean.max >= pageBean.pageCnt }">
-									<li class="page-item disabled">
-										<a href="#" class="page-link">다음</a>
-									</li>
-									</c:when>
-									<c:otherwise>
-									<li class="page-item">
-										<a href="${root }project/proMain?page${pageBean.nextPage}" class="page-link">다음</a>
-									</li>
-									</c:otherwise>
-									</c:choose>
-									
-								</ul>
+								<button class="add-pro">추가</button>
 							</div>
 										        
 				        </div>
+
+						<%--추가 리스트--%>
+
+						<div class="add-form">
+							<p class="add-title">추가 리스트</p>
+							<div class="showList">
+								<form action="addUserMatch" method="post" id="addUserMatchForm">
+									<table class="result-table">
+										<thead>
+										<tr>
+											<th><input type="checkbox" id="add-allpro" class="add-allpro" style="display: none"/></th>
+											<th>프로젝트 번호</th>
+											<th>프로젝트명</th>
+											<th>시작일</th>
+											<th>종료일</th>
+											<th>진행상태</th>
+											<th>투입일</th>
+											<th>철수일</th>
+											<th>역할</th>
+											<th><button class="delete-all">&nbsp;❌&nbsp;</button></th>
+										</tr>
+										</thead>
+										<tbody class="add-proMain">
+
+										</tbody>
+									</table>
+
+								</form>
+							</div>
+							<div class="pagination-main">
+								<button class="add-match">등록</button>
+							</div>
+						</div>
 				        
-				        
+
 			        </div><!-- modal-div -->
 			    </form>
-			
-	        <button class="delete">프로젝트 삭제</button> 
-        </div>
+
+
 	</div>
 </body>
+<script src="${root}js/userMatch.js"></script>
 </html>

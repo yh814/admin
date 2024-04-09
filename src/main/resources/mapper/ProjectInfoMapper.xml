@@ -1,22 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.test3.dao.ProjectInfoDao">
-
-    <!--전체 프로젝트-->
-    <select id="allProList" resultType="ProjectInfoDto">
-        SELECT PI.*,
-        CUSTOMER.DETAILCDNAME AS cusDetailName,
-        PROGRESS.DETAILCDNAME AS progressDetailName
-        FROM PROJECT_INFO PI
-        LEFT JOIN CODE_DETAIL CUSTOMER ON PI.CUSCD = CUSTOMER.DETAILCD AND CUSTOMER.CODEID='CD006'
-        LEFT JOIN CODE_DETAIL PROGRESS ON PI.PROGRESSCD = PROGRESS.DETAILCD AND PROGRESS.CODEID='CD007'
-    </select>
-
-    <!--모든 프로젝트 개수 가져오기-->
-    <select id="getAllProjectCount" resultType="int">
-        SELECT COUNT(PRONUM)
-        FROM PROJECT_INFO
-    </select>
+<mapper namespace="com.example.admin.dao.ProjectInfoDao">
 
     <!--해당 프로젝트의 필요기술들-->
     <select id="selectProSkill" resultType="String">
@@ -38,6 +22,69 @@
         AND PI.CUSCD LIKE #{searchProCust}
         AND PI.STARTDATE BETWEEN TO_DATE(#{searchStartDate1},'YYYY-MM-DD') AND TO_DATE(#{searchStartDate2},'YYYY-MM-DD')
         AND PI.ENDDATE BETWEEN TO_DATE(#{searchEndDate1},'YYYY-MM-DD') AND TO_DATE(#{searchEndDate2},'YYYY-MM-DD')
+        ORDER BY PI.PRONUM DESC
+    </select>
+
+    <!--검색한 프로젝트 개수 가져오기-->
+    <select id="getSearchProjectCount" resultType="int">
+        SELECT COUNT(PI.PRONUM)
+        FROM PROJECT_INFO PI
+        WHERE PI.PRONAME LIKE #{searchProName}
+          AND PI.CUSCD LIKE #{searchProCust}
+          AND PI.STARTDATE BETWEEN TO_DATE(#{searchStartDate1},'YYYY-MM-DD') AND TO_DATE(#{searchStartDate2},'YYYY-MM-DD')
+          AND PI.ENDDATE BETWEEN TO_DATE(#{searchEndDate1},'YYYY-MM-DD') AND TO_DATE(#{searchEndDate2},'YYYY-MM-DD')
+        ORDER BY PI.PRONUM DESC
+    </select>
+
+    <!--프로젝트 삭제-->
+    <delete id="delProFromMP">
+        DELETE FROM MATCH_PRO
+        WHERE PRONUM = #{proNum}
+    </delete>
+
+    <delete id="delProFromUS">
+        DELETE FROM PRO_SKILL
+        WHERE PRONUM = #{proNum}
+    </delete>
+
+    <delete id="delProFromPI">
+        DELETE FROM PROJECT_INFO
+        WHERE PRONUM = #{proNum}
+    </delete>
+
+    <!--프로젝트 등록-->
+    <insert id="addPro" useGeneratedKeys="true" keyProperty="proNum" keyColumn="proNum">
+        INSERT INTO PROJECT_INFO
+        (PRONUM, PRONAME, CUSCD, STARTDATE, ENDDATE, PROGRESSCD, MANAGER, MPHONE, NOTE)
+        VALUES
+            (pro_info_seq.NEXTVAL, #{proName}, #{cusCD}, #{startDate}, #{endDate}, #{progressCD}, #{manager}, #{mPhone}, #{note})
+    </insert>
+
+    <!--프로젝트 요구스킬 등록-->
+    <insert id="addProSkill">
+        INSERT INTO PRO_SKILL(PRONUM, DETAILCD)
+        VALUES (#{proNum}, #{detailCD})
+    </insert>
+
+    <!--프로젝트 수정-->
+    <update id="modifyProInfo">
+        UPDATE PROJECT_INFO
+        SET PRONAME = #{proName},
+            CUSCD = #{cusCD},
+            STARTDATE = #{startDate},
+            ENDDATE = #{endDate},
+            PROGRESSCD = #{progressCD},
+            MANAGER = #{manager},
+            MPHONE = #{mPhone},
+            NOTE = #{note}
+        WHERE PRONUM = #{proNum}
+    </update>
+
+    <!--하나의 프로젝트 정보-->
+    <select id="getOneProInfo">
+        SELECT *
+        FROM PROJECT_INFO
+        WHERE PRONUM = #{proNum}
     </select>
 
 </mapper>
